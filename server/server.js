@@ -10,7 +10,7 @@ import { configureSockets } from "./sockets/documentSocket.js";
 
 const app = express();
 const server = http.createServer(app);
-const allowedOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
+const allowedOrigin = process.env.MONGODB_URI || "http://localhost:5173";
 
 app.use(cors({ origin: allowedOrigin }));
 app.use(express.json({ limit: "300kb" }));
