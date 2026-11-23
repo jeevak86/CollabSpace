@@ -10,17 +10,22 @@ import { configureSockets } from "./sockets/documentSocket.js";
 
 const app = express();
 const server = http.createServer(app);
-const allowedOrigin = process.env.MONGODB_URI || "http://localhost:5173";
 
-app.use(cors({ origin: allowedOrigin }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_ORIGIN
+].filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json({ limit: "300kb" }));
 
 const io = new Server(server, {
-  cors: { origin: allowedOrigin, methods: ["GET", "POST"] }
+  cors: { origin: allowedOrigins, methods: ["GET", "POST"], credentials: true }
 });
 app.set("io", io);
 configureSockets(io);
 
+app.get("/", (_req, res) => res.json({ status: "ok", service: "CollabSpace API" }));
 app.get("/api/health", (_req, res) => res.json({ status: "ok", service: "CollabSpace API" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRoutes);
